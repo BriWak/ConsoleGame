@@ -1,12 +1,11 @@
 package app
 
-class Ship(shape: String, colour: String = "blue", bW: Int, bH: Int, private var index: Int, private var lastDirection: String = "") {
+case class Board(width: Int, height: Int)
 
-  def eraseScreen: Unit = {
-    print("\033[H\033[2J")
-  }
+class Ship(shape: String, colour: String = "blue", board: Board, private var index: Int) {
 
-  var canMove = true
+  private var canMove = true
+  private var lastDirection: String = ""
 
   def getShape ={
     val consoleColor = this.colour match {
@@ -18,49 +17,46 @@ class Ship(shape: String, colour: String = "blue", bW: Int, bH: Int, private var
 
     consoleColor+s"■${Console.RESET}"
   }
-  def getBoardWidth: Int = {
-    this.bW
-  }
-
-  def getBoardHeight: Int = {
-    this.bH
-  }
 
   def getIndex: Int = {
     this.index
   }
 
   def moveLeft = {
-    if (canMove && (index - 2) / bW == index / bW && index - 2 >= 0) {
+    if (canMove && (index - 2) / board.width == index / board.width && index - 2 >= 0) {
       index = index - 2
+      setLastDirection("left")
     }
   }
 
   def moveRight = {
-    if (canMove && (index + 2) % bW != 0) {
+    if (canMove && (index + 2) % board.width != 0) {
       index = index + 2
+      setLastDirection("right")
     }
   }
 
   def moveUp = {
-    if (canMove && (index - bW) >= 0) {
-      index = index - bW
+    if (canMove && (index - board.width) >= 0) {
+      index = index - board.width
+      setLastDirection("up")
     }
   }
 
   def moveDown = {
-    if (canMove && (index + bW) < bW*bH) {
-      index = index + bW
+    if (canMove && (index + board.width) < board.width*board.height) {
+      index = index + board.width
+      setLastDirection("down")
     }
   }
 
   def setLastDirection(direction: String) = {
   direction match {
-    case "left" => this.lastDirection = direction
-    case "right" => this.lastDirection = direction
-    case "up" => this.lastDirection = direction
-    case "down" => this.lastDirection = direction
-    case _ => this.lastDirection = ""
+    case "left" => lastDirection = direction
+    case "right" => lastDirection = direction
+    case "up" => lastDirection = direction
+    case "down" => lastDirection = direction
+    case _ => lastDirection = ""
     }
   }
 

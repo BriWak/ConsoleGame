@@ -1,22 +1,18 @@
 package app
 
 import java.util.concurrent.ArrayBlockingQueue
-
-import com.sun.org.apache.xpath.internal.functions.FuncFalse
 import jline.console.{ConsoleReader, KeyMap, Operation}
-
 import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.{Future, blocking}
-
-case class GameState(pos: (Int, Int))
 
 object ConsoleGame extends App {
   val reader = new ConsoleReader()
   var isGameOn = true
   val keyPressses = new ArrayBlockingQueue[Either[Operation, String]](128)
-  val ship = new Ship("dot",s"${Console.RED}",40,20, 0)
+  val board = Board(40, 20)
+  val ship = new Ship("dot","blue", board, 420)
   clear()
-  printBoard(ship, ship.getBoardWidth,ship.getBoardHeight)
+  printBoard(ship, board.width,board.height)
 
   // inside a background thread
   val inputHandling = Future {
@@ -40,7 +36,7 @@ object ConsoleGame extends App {
       Option(keyPressses.poll) foreach { k =>
         handleKeypress(ship, k)
         clear()
-        printBoard(ship, ship.getBoardWidth,ship.getBoardHeight)
+        printBoard(ship, board.width,board.height)
       }
     }
     tick += 1
@@ -48,7 +44,7 @@ object ConsoleGame extends App {
     if (keyPressses.isEmpty) {
       ship.keepMoving
       clear()
-      printBoard(ship, ship.getBoardWidth, ship.getBoardHeight)
+      printBoard(ship, board.width,board.height)
     }
   }
 
@@ -63,29 +59,25 @@ object ConsoleGame extends App {
       // Left arrow
       case Left(Operation.BACKWARD_CHAR) =>
         ship.moveLeft
-        ship.setLastDirection("left")
       // Right arrow
       case Left(Operation.FORWARD_CHAR) =>
         ship.moveRight
-        ship.setLastDirection("right")
       // Down arrow
       case Left(Operation.NEXT_HISTORY) =>
         ship.moveDown
-        ship.setLastDirection("down")
       // Up arrow
       case Left(Operation.PREVIOUS_HISTORY) =>
         ship.moveUp
-        ship.setLastDirection("up")
       case _ =>
         // println(k)
     }
 
-  def printBoard(ship: Ship, bW: Int, bH: Int): Unit = {
+  def printBoard(ship: Ship, width: Int, height: Int): Unit = {
 
     println(s"${Console.GREEN} Press 'q' to quit${Console.RESET}")
-    println(" ┏━" + "━" * bW + "━┓")
+    println(" ┏━" + "━" * width + "━┓")
 
-    val matrix = List.range(0, bW*bH).map(index => if(ship.getIndex == index) ship.getShape else " ").grouped(bW)
+    val matrix = List.range(0, width*height).map(index => if(ship.getIndex == index) ship.getShape else " ").grouped(width)
 
     matrix.foreach(row => {
       print(" ┃ ")
@@ -93,9 +85,7 @@ object ConsoleGame extends App {
       println(" ┃")
     })
 
-    println(" ┗━" + "━" * bW + "━┛")
+    println(" ┗━" + "━" * width + "━┛")
   }
-
-
 
 }
