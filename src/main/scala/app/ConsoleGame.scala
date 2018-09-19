@@ -2,19 +2,20 @@ package app
 
 import java.util.concurrent.ArrayBlockingQueue
 
+import com.sun.org.apache.xpath.internal.functions.FuncFalse
 import jline.console.{ConsoleReader, KeyMap, Operation}
 
 import scala.concurrent.ExecutionContext.Implicits._
-import scala.concurrent.{ExecutionContext, Future, blocking}
+import scala.concurrent.{Future, blocking}
 
 case class GameState(pos: (Int, Int))
 
 object ConsoleGame extends App {
   val reader = new ConsoleReader()
-  val isGameOn = true
+  var isGameOn = true
   val keyPressses = new ArrayBlockingQueue[Either[Operation, String]](128)
-  val ship = new Ship("dot",s"${Console.RED}", 5)
-  printBoard(ship, 10,20)
+  val ship = new Ship("dot",s"${Console.RED}",40,20, 0)
+  printBoard(ship, ship.getBoardWidth,ship.getBoardHeight)
 
   // inside a background thread
   val inputHandling = Future {
@@ -38,11 +39,10 @@ object ConsoleGame extends App {
       Option(keyPressses.poll) foreach { k =>
         handleKeypress(ship, k)
         clear()
-        printBoard(ship, 10,20)
+        printBoard(ship, ship.getBoardWidth,ship.getBoardHeight)
       }
     }
     tick += 1
-
     Thread.sleep(100)
   }
 
@@ -53,7 +53,7 @@ object ConsoleGame extends App {
   def handleKeypress(ship: Ship, k: Either[Operation, String]) =
     k match {
       case Right("q") | Left(Operation.VI_EOF_MAYBE) =>
-        !isGameOn
+        isGameOn = false
       // Left arrow
       case Left(Operation.BACKWARD_CHAR) =>
         ship.moveLeft
@@ -61,22 +61,27 @@ object ConsoleGame extends App {
       case Left(Operation.FORWARD_CHAR) =>
         ship.moveRight
       // Down arrow
-//      case Left(Operation.NEXT_HISTORY) =>
-//        val pos0 = g.pos
-//        g.copy(pos = (pos0._1, pos0._2 + 1))
-//      // Up arrow
-//      case Left(Operation.PREVIOUS_HISTORY) =>
-//        val pos0 = g.pos
-//        g.copy(pos = (pos0._1, pos0._2 - 1))
+      case Left(Operation.NEXT_HISTORY) =>
+        ship.moveDown
+      // Up arrow
+      case Left(Operation.PREVIOUS_HISTORY) =>
+        ship.moveUp
       case _ =>
         // println(k)
     }
 
   def printBoard(ship: Ship, bW: Int, bH: Int): Unit = {
 
-    println("┏" + "━" * bW * 2 + "━┓")
-    (1 to bH).foreach(_ => println("┃ "  + " " * bW * 2 + "┃"))
-    println("┗" + "━" * bW * 2 + "━┛")
+    println("┏━" + "━" * bW + "━┓")
+
+    val xxx = List.range(0, bW*bH).map(index => if(ship.getIndex == index) ship.getShape else " ").grouped(bW)
+
+    xxx.foreach(row => {
+      print("┃ ")
+      row.foreach(cell => print(cell))
+      println(" ┃")
+    })
+    println("┗━" + "━" * bW + "━┛")
   }
 
 
