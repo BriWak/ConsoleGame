@@ -1,51 +1,25 @@
 package app
 
-import java.util.concurrent.ArrayBlockingQueue
-import jline.console.{ConsoleReader, KeyMap, Operation}
-import scala.concurrent.ExecutionContext.Implicits._
-import scala.concurrent.{Future, blocking}
+import jline.console.Operation
 
 object ConsoleGame extends App {
-  val reader = new ConsoleReader()
   var isGameOn = true
-  val keyPressses = new ArrayBlockingQueue[Either[Operation, String]](128)
   val board = Board(40, 20)
   val ship = new Ship("dot","blue", board, 420)
-  clear()
-  printBoard(ship, board.width,board.height)
-
-  // inside a background thread
-  val inputHandling = Future {
-    val km = KeyMap.keyMaps().get("vi-insert")
-    while (isGameOn) {
-      blocking {
-        val c = reader.readBinding(km)
-        val k: Either[Operation, String] =
-          if (c == Operation.SELF_INSERT) Right(reader.getLastBinding)
-          else Left(c match { case op: Operation => op })
-        keyPressses.add(k)
-      }
-    }
-  }
+  val keyPresses = CaptureKeyPresses(isGameOn)
 
   var tick: Int = 0
 
   // inside the main thread
   while (isGameOn) {
-    while (!keyPressses.isEmpty) {
-      Option(keyPressses.poll) foreach { k =>
-        handleKeypress(ship, k)
-        clear()
-        printBoard(ship, board.width,board.height)
-      }
+    if (!keyPresses.isEmpty) {
+        handleKeypress(ship, keyPresses.poll)
+      } else {
+      ship.keepMoving
     }
+    printBoard(ship, board.width,board.height)
     tick += 1
     Thread.sleep(100)
-    if (keyPressses.isEmpty) {
-      ship.keepMoving
-      clear()
-      printBoard(ship, board.width,board.height)
-    }
   }
 
   def clear(): Unit ={
@@ -74,6 +48,7 @@ object ConsoleGame extends App {
 
   def printBoard(ship: Ship, width: Int, height: Int): Unit = {
     if (ship.tail.init.contains(ship.getIndex)) isGameOn = false
+    clear()
     println(s"${Console.GREEN} Press 'q' to quit${Console.RESET}")
     println(" ┏━" + "━" * width + "━┓")
 
