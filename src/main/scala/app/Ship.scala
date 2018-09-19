@@ -1,11 +1,15 @@
 package app
 
+import scala.collection.mutable.ArrayBuffer
+
 case class Board(width: Int, height: Int)
 
 class Ship(shape: String, colour: String = "blue", board: Board, private var index: Int) {
 
   private var canMove = true
   private var lastDirection: String = ""
+  var tail: ArrayBuffer[Int] = ArrayBuffer(index)
+
 
   def getShape ={
     val consoleColor = this.colour match {
@@ -25,6 +29,7 @@ class Ship(shape: String, colour: String = "blue", board: Board, private var ind
   def moveLeft = {
     if (canMove && (index - 2) / board.width == index / board.width && index - 2 >= 0) {
       index = index - 2
+      tail = tail :+ index
       setLastDirection("left")
     }
   }
@@ -32,6 +37,7 @@ class Ship(shape: String, colour: String = "blue", board: Board, private var ind
   def moveRight = {
     if (canMove && (index + 2) % board.width != 0) {
       index = index + 2
+      tail = tail :+ index
       setLastDirection("right")
     }
   }
@@ -40,6 +46,7 @@ class Ship(shape: String, colour: String = "blue", board: Board, private var ind
     if (canMove && (index - board.width) >= 0) {
       index = index - board.width
       setLastDirection("up")
+      tail = tail :+ index
     }
   }
 
@@ -47,6 +54,7 @@ class Ship(shape: String, colour: String = "blue", board: Board, private var ind
     if (canMove && (index + board.width) < board.width*board.height) {
       index = index + board.width
       setLastDirection("down")
+      tail = tail :+ index
     }
   }
 

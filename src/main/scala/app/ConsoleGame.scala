@@ -77,7 +77,7 @@ object ConsoleGame extends App {
     println(s"${Console.GREEN} Press 'q' to quit${Console.RESET}")
     println(" ┏━" + "━" * width + "━┓")
 
-    val matrix = List.range(0, width*height).map(index => if(ship.getIndex == index) ship.getShape else " ").grouped(width)
+    val matrix = List.range(0, width*height).map(index => if(ship.tail.contains(index)) ship.getShape else " ").grouped(width)
 
     matrix.foreach(row => {
       print(" ┃ ")
