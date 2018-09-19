@@ -15,6 +15,7 @@ object ConsoleGame extends App {
   var isGameOn = true
   val keyPressses = new ArrayBlockingQueue[Either[Operation, String]](128)
   val ship = new Ship("dot",s"${Console.RED}",40,20, 0)
+  clear()
   printBoard(ship, ship.getBoardWidth,ship.getBoardHeight)
 
   // inside a background thread
@@ -43,7 +44,12 @@ object ConsoleGame extends App {
       }
     }
     tick += 1
-    Thread.sleep(100)
+    Thread.sleep(1000)
+    if (keyPressses.isEmpty) {
+      ship.moveRight
+      clear()
+      printBoard(ship, ship.getBoardWidth, ship.getBoardHeight)
+    }
   }
 
   def clear(): Unit ={
@@ -72,16 +78,18 @@ object ConsoleGame extends App {
 
   def printBoard(ship: Ship, bW: Int, bH: Int): Unit = {
 
-    println("┏━" + "━" * bW + "━┓")
+    println(s"${Console.GREEN} Press 'q' to quit${Console.RESET}")
+    println(" ┏━" + "━" * bW + "━┓")
 
-    val xxx = List.range(0, bW*bH).map(index => if(ship.getIndex == index) ship.getShape else " ").grouped(bW)
+    val matrix = List.range(0, bW*bH).map(index => if(ship.getIndex == index) ship.getShape else " ").grouped(bW)
 
-    xxx.foreach(row => {
-      print("┃ ")
+    matrix.foreach(row => {
+      print(" ┃ ")
       row.foreach(cell => print(cell))
       println(" ┃")
     })
-    println("┗━" + "━" * bW + "━┛")
+
+    println(" ┗━" + "━" * bW + "━┛")
   }
 
 

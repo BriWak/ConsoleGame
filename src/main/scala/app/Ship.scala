@@ -54,6 +54,16 @@ class Ship(shape: String, colour: String = "blue", bW: Int, bH: Int, private var
     }
   }
 
+  def keepMoving(direction: String) = {
+  direction match {
+    case "left" => this.moveLeft
+    case "right" => this.moveRight
+    case "up" => this.moveUp
+    case "down" => this.moveDown
+    case _ =>
+    }
+  }
+
   def stopMove = {
     canMove = false
   }
