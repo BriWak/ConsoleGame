@@ -5,7 +5,7 @@ import jline.console.Operation
 object ConsoleGame extends App {
   var isGameOn = true
   val board = Board(40, 20)
-  val ship = new Ship("dot","blue", board, 420)
+  val ship = new Snake("blue", board, 420)
   val keyPresses = CaptureKeyPresses(isGameOn)
 
   var tick: Int = 0
@@ -26,8 +26,8 @@ object ConsoleGame extends App {
     print("\033[H\033[2J")
   }
 
-  def handleKeypress(ship: Ship, k: Either[Operation, String]) =
-    k match {
+  def handleKeypress(ship: Snake, key: Either[Operation, String]) =
+    key match {
       case Right("q") | Left(Operation.VI_EOF_MAYBE) =>
         isGameOn = false
       // Left arrow
@@ -46,7 +46,7 @@ object ConsoleGame extends App {
         // println(k)
     }
 
-  def printBoard(ship: Ship, width: Int, height: Int): Unit = {
+  def printBoard(ship: Snake, width: Int, height: Int): Unit = {
     if (ship.tail.init.contains(ship.getIndex)) isGameOn = false
     clear()
     println(s"${Console.GREEN} Press 'q' to quit${Console.RESET}")

@@ -7,6 +7,7 @@ import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.{Future, blocking}
 
 object CaptureKeyPresses {
+
   def apply(captureWhile: Boolean): ArrayBlockingQueue[Either[Operation, String]] = {
     val reader = new ConsoleReader()
     val keyPresses = new ArrayBlockingQueue[Either[Operation, String]](128)

@@ -1,15 +1,15 @@
 package app
 
+import app.ConsoleGame.isGameOn
+
 import scala.collection.mutable.ArrayBuffer
 
 case class Board(width: Int, height: Int)
 
-class Ship(shape: String, colour: String = "blue", flightLimits: Board, private var index: Int) {
+class Snake(colour: String = "blue", gameArea: Board, private var index: Int) {
 
-  private var canMove = true
   private var lastDirection: String = ""
   var tail: ArrayBuffer[Int] = ArrayBuffer(index)
-
 
   def getShape ={
     val consoleColor = this.colour match {
@@ -18,7 +18,6 @@ class Ship(shape: String, colour: String = "blue", flightLimits: Board, private 
       case "blue" => s"${Console.BLUE}"
       case _ => s"${Console.YELLOW}"
     }
-
     consoleColor+s"■${Console.RESET}"
   }
 
@@ -27,34 +26,42 @@ class Ship(shape: String, colour: String = "blue", flightLimits: Board, private 
   }
 
   def moveLeft = {
-    if (canMove && (index - 2) / flightLimits.width == index / flightLimits.width && index - 2 >= 0) {
+    if ((index - 2) / gameArea.width == index / gameArea.width && index - 2 >= 0) {
       index = index - 2
       tail = tail :+ index
       setLastDirection("left")
+    } else {
+      isGameOn = false
     }
   }
 
   def moveRight = {
-    if (canMove && (index + 2) % flightLimits.width != 0) {
+    if ((index + 2) % gameArea.width != 0) {
       index = index + 2
       tail = tail :+ index
       setLastDirection("right")
+    } else {
+      isGameOn = false
     }
   }
 
   def moveUp = {
-    if (canMove && (index - flightLimits.width) >= 0) {
-      index = index - flightLimits.width
-      setLastDirection("up")
+    if ((index - gameArea.width) >= 0) {
+      index = index - gameArea.width
       tail = tail :+ index
+      setLastDirection("up")
+    } else {
+      isGameOn = false
     }
   }
 
   def moveDown = {
-    if (canMove && (index + flightLimits.width) < flightLimits.width*flightLimits.height) {
-      index = index + flightLimits.width
-      setLastDirection("down")
+    if ((index + gameArea.width) < gameArea.width*gameArea.height) {
+      index = index + gameArea.width
       tail = tail :+ index
+      setLastDirection("down")
+    } else {
+      isGameOn = false
     }
   }
 
@@ -76,10 +83,6 @@ class Ship(shape: String, colour: String = "blue", flightLimits: Board, private 
       case "down" => this.moveDown
       case _ =>
     }
-  }
-
-  def stopMove = {
-    canMove = false
   }
 
 }
