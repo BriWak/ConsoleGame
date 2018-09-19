@@ -1,6 +1,6 @@
 package app
 
-class Ship(shape: String, colour: String = "blue", bW: Int, bH: Int, private var index: Int) {
+class Ship(shape: String, colour: String = "blue", bW: Int, bH: Int, private var index: Int, private var lastDirection: String = "") {
 
   def eraseScreen: Unit = {
     print("\033[H\033[2J")
@@ -31,14 +31,14 @@ class Ship(shape: String, colour: String = "blue", bW: Int, bH: Int, private var
   }
 
   def moveLeft = {
-    if (canMove && (index - 1) / bW == index / bW && index - 1 >= 0) {
-      index = index - 1
+    if (canMove && (index - 2) / bW == index / bW && index - 2 >= 0) {
+      index = index - 2
     }
   }
 
   def moveRight = {
-    if (canMove && (index + 1) % bW != 0) {
-      index = index + 1
+    if (canMove && (index + 2) % bW != 0) {
+      index = index + 2
     }
   }
 
@@ -54,13 +54,23 @@ class Ship(shape: String, colour: String = "blue", bW: Int, bH: Int, private var
     }
   }
 
-  def keepMoving(direction: String) = {
+  def setLastDirection(direction: String) = {
   direction match {
-    case "left" => this.moveLeft
-    case "right" => this.moveRight
-    case "up" => this.moveUp
-    case "down" => this.moveDown
-    case _ =>
+    case "left" => this.lastDirection = direction
+    case "right" => this.lastDirection = direction
+    case "up" => this.lastDirection = direction
+    case "down" => this.lastDirection = direction
+    case _ => this.lastDirection = ""
+    }
+  }
+
+  def keepMoving = {
+    this.lastDirection match {
+      case "left" => this.moveLeft
+      case "right" => this.moveRight
+      case "up" => this.moveUp
+      case "down" => this.moveDown
+      case _ =>
     }
   }
 

@@ -44,9 +44,9 @@ object ConsoleGame extends App {
       }
     }
     tick += 1
-    Thread.sleep(1000)
+    Thread.sleep(100)
     if (keyPressses.isEmpty) {
-      ship.moveRight
+      ship.keepMoving
       clear()
       printBoard(ship, ship.getBoardWidth, ship.getBoardHeight)
     }
@@ -63,15 +63,19 @@ object ConsoleGame extends App {
       // Left arrow
       case Left(Operation.BACKWARD_CHAR) =>
         ship.moveLeft
+        ship.setLastDirection("left")
       // Right arrow
       case Left(Operation.FORWARD_CHAR) =>
         ship.moveRight
+        ship.setLastDirection("right")
       // Down arrow
       case Left(Operation.NEXT_HISTORY) =>
         ship.moveDown
+        ship.setLastDirection("down")
       // Up arrow
       case Left(Operation.PREVIOUS_HISTORY) =>
         ship.moveUp
+        ship.setLastDirection("up")
       case _ =>
         // println(k)
     }
