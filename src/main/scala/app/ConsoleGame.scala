@@ -73,7 +73,7 @@ object ConsoleGame extends App {
     }
 
   def printBoard(ship: Ship, width: Int, height: Int): Unit = {
-
+    if (ship.tail.init.contains(ship.getIndex)) isGameOn = false
     println(s"${Console.GREEN} Press 'q' to quit${Console.RESET}")
     println(" ┏━" + "━" * width + "━┓")
 

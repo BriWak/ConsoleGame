@@ -4,7 +4,7 @@ import scala.collection.mutable.ArrayBuffer
 
 case class Board(width: Int, height: Int)
 
-class Ship(shape: String, colour: String = "blue", board: Board, private var index: Int) {
+class Ship(shape: String, colour: String = "blue", flightLimits: Board, private var index: Int) {
 
   private var canMove = true
   private var lastDirection: String = ""
@@ -27,7 +27,7 @@ class Ship(shape: String, colour: String = "blue", board: Board, private var ind
   }
 
   def moveLeft = {
-    if (canMove && (index - 2) / board.width == index / board.width && index - 2 >= 0) {
+    if (canMove && (index - 2) / flightLimits.width == index / flightLimits.width && index - 2 >= 0) {
       index = index - 2
       tail = tail :+ index
       setLastDirection("left")
@@ -35,7 +35,7 @@ class Ship(shape: String, colour: String = "blue", board: Board, private var ind
   }
 
   def moveRight = {
-    if (canMove && (index + 2) % board.width != 0) {
+    if (canMove && (index + 2) % flightLimits.width != 0) {
       index = index + 2
       tail = tail :+ index
       setLastDirection("right")
@@ -43,16 +43,16 @@ class Ship(shape: String, colour: String = "blue", board: Board, private var ind
   }
 
   def moveUp = {
-    if (canMove && (index - board.width) >= 0) {
-      index = index - board.width
+    if (canMove && (index - flightLimits.width) >= 0) {
+      index = index - flightLimits.width
       setLastDirection("up")
       tail = tail :+ index
     }
   }
 
   def moveDown = {
-    if (canMove && (index + board.width) < board.width*board.height) {
-      index = index + board.width
+    if (canMove && (index + flightLimits.width) < flightLimits.width*flightLimits.height) {
+      index = index + flightLimits.width
       setLastDirection("down")
       tail = tail :+ index
     }
