@@ -49,7 +49,8 @@ object ConsoleGame extends App {
   def printBoard(ship: Snake, width: Int, height: Int): Unit = {
     if (ship.tail.init.contains(ship.getIndex)) isGameOn = false
     clear()
-    println(s"${Console.GREEN} Press 'q' to quit${Console.RESET}")
+    printTitle("tron")
+
     println(" ┏━" + "━" * width + "━┓")
 
     val matrix = List.range(0, width*height).map(index => if(ship.tail.contains(index)) ship.getShape else " ").grouped(width)
@@ -61,6 +62,27 @@ object ConsoleGame extends App {
     })
 
     println(" ┗━" + "━" * width + "━┛")
+    println(s"${Console.GREEN} Press 'q' to quit${Console.RESET}")
+  }
+
+  def printTitle(title: String) = title match {
+    case "snake" =>
+      println(s"${Console.GREEN}" +
+        " ■■■■  ■■■■  ■■■■  ■  ■  ■■■■\n" +
+        " ■     ■  ■  ■  ■  ■ ■   ■   \n" +
+        " ■■■■  ■  ■  ■■■■  ■■    ■■■ \n" +
+        "    ■  ■  ■  ■  ■  ■ ■   ■   \n" +
+        " ■■■■  ■  ■  ■  ■  ■  ■  ■■■■\n" +
+        s"${Console.RESET}")
+    case "tron" =>
+      println(s"${Console.BLUE}" +
+        " ■■■■■  ■■■   ■■■■  ■   ■\n" +
+        "   ■    ■  ■  ■  ■  ■■  ■\n" +
+        "   ■    ■■■   ■  ■  ■ ■ ■\n" +
+        "   ■    ■  ■  ■  ■  ■  ■■\n" +
+        "   ■    ■  ■  ■■■■  ■   ■\n" +
+        s"${Console.RESET}")
+    case _ =>
   }
 
 }
