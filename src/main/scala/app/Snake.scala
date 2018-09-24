@@ -6,10 +6,14 @@ import scala.collection.mutable.ArrayBuffer
 
 case class Board(width: Int, height: Int)
 
-class Snake(colour: String = "blue", gameArea: Board, private var index: Int) {
+class Snake(name: String, colour: String = "blue", gameArea: Board, private var index: Int, private var lastDirection: String = "") {
 
-  private var lastDirection: String = ""
   var tail: ArrayBuffer[Int] = ArrayBuffer(index)
+  private var isAlive = true
+
+  def getName: String = {
+    this.name
+  }
 
   def getShape ={
     val consoleColor = this.colour match {
@@ -19,6 +23,10 @@ class Snake(colour: String = "blue", gameArea: Board, private var index: Int) {
       case _ => s"${Console.YELLOW}"
     }
     consoleColor+s"■${Console.RESET}"
+  }
+
+  def isStillAlive: Boolean = {
+    this.isAlive
   }
 
   def getIndex: Int = {
@@ -32,6 +40,7 @@ class Snake(colour: String = "blue", gameArea: Board, private var index: Int) {
       setLastDirection("left")
     } else {
       isGameOn = false
+      isAlive = false
     }
   }
 
@@ -42,6 +51,7 @@ class Snake(colour: String = "blue", gameArea: Board, private var index: Int) {
       setLastDirection("right")
     } else {
       isGameOn = false
+      isAlive = false
     }
   }
 
@@ -52,6 +62,7 @@ class Snake(colour: String = "blue", gameArea: Board, private var index: Int) {
       setLastDirection("up")
     } else {
       isGameOn = false
+      isAlive = false
     }
   }
 
@@ -62,6 +73,7 @@ class Snake(colour: String = "blue", gameArea: Board, private var index: Int) {
       setLastDirection("down")
     } else {
       isGameOn = false
+      isAlive = false
     }
   }
 
