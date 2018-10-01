@@ -3,16 +3,13 @@ package app
 import jline.console.Operation
 
 object ConsoleGame extends App {
-  var isGameOn = true
   val board = Board(40, 20)
   val player1 = new Snake("Player 1","blue", board, board.height*board.width-board.width, "right")
   val player2 = new Snake("Player 2","yellow", board, board.width-2, "left")
-  val keyPresses = CaptureKeyPresses(isGameOn)
-
-  var tick: Int = 0
+  val keyPresses = CaptureKeyPresses(GameOn())
 
   // inside the main thread
-  while (isGameOn) {
+  while (GameOn()) {
     if (!keyPresses.isEmpty) {
         handleKeypress(player1, player2, keyPresses.poll)
       } else {
@@ -20,7 +17,6 @@ object ConsoleGame extends App {
       player2.keepMoving
     }
     printBoard(player1, player2, board.width,board.height)
-    tick += 1
     Thread.sleep(100)
   }
 
@@ -31,7 +27,7 @@ object ConsoleGame extends App {
   def handleKeypress(player1: Snake, player2: Snake, key: Either[Operation, String]) =
     key match {
       case Right("p") | Left(Operation.VI_EOF_MAYBE) =>
-        isGameOn = false
+        //isGameOn = false
       // Left arrow
       case Left(Operation.BACKWARD_CHAR) =>
         player1.moveLeft
@@ -62,7 +58,7 @@ object ConsoleGame extends App {
   def printBoard(player1: Snake, player2: Snake, width: Int, height: Int): Unit = {
 
     clear()
-    printTitle("tron")
+    PrintTitle("tron", "blue")
     println(" ┏━" + "━" * width + "━┓")
 
     val matrix = List.range(0, width*height).map(index =>
@@ -79,41 +75,9 @@ object ConsoleGame extends App {
     println(" ┗━" + "━" * width + "━┛")
     println(s"${Console.GREEN} Press 'p' to quit${Console.RESET}")
 
-    if (!player1.isStillAlive) println(s"\n${player2.getName} wins!\n")
-    else if (!player2.isStillAlive) println(s"\n${player1.getName} wins!\n")
-
-    if (player1.tail.init.contains(player2.getIndex) && player2.tail.init.contains(player1.getIndex)) {
-      isGameOn = false
-      println("\nGame Over! You both lose!\n")
-    }
-    else if (player1.tail.init.contains(player2.getIndex) || player2.tail.init.contains(player2.getIndex)) {
-      isGameOn = false
-      println(s"\n${player1.getName} wins!\n")
-    }
-    else if (player1.tail.init.contains(player1.getIndex) || player2.tail.init.contains(player1.getIndex)) {
-      isGameOn = false
-      println(s"\n${player2.getName} wins!\n")
-    }
+    GameOn()
   }
 
-  def printTitle(title: String) = title match {
-    case "snake" =>
-      println(s"${Console.GREEN}" +
-        " ■■■■  ■■■■  ■■■■  ■  ■  ■■■■\n" +
-        " ■     ■  ■  ■  ■  ■ ■   ■   \n" +
-        " ■■■■  ■  ■  ■■■■  ■■    ■■■ \n" +
-        "    ■  ■  ■  ■  ■  ■ ■   ■   \n" +
-        " ■■■■  ■  ■  ■  ■  ■  ■  ■■■■\n" +
-        s"${Console.RESET}")
-    case "tron" =>
-      println(s"${Console.BLUE}" +
-        " ■■■■■  ■■■   ■■■■  ■   ■\n" +
-        "   ■    ■  ■  ■  ■  ■■  ■\n" +
-        "   ■    ■■■   ■  ■  ■ ■ ■\n" +
-        "   ■    ■  ■  ■  ■  ■  ■■\n" +
-        "   ■    ■  ■  ■■■■  ■   ■\n" +
-        s"${Console.RESET}")
-    case _ =>
-  }
+
 
 }

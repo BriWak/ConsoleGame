@@ -1,15 +1,12 @@
 package app
 
-import app.ConsoleGame.isGameOn
-
 import scala.collection.mutable.ArrayBuffer
 
 case class Board(width: Int, height: Int)
 
-class Snake(name: String, colour: String = "blue", gameArea: Board, private var index: Int, private var lastDirection: String = "") {
+class Snake(name: String, colour: String = "blue", gameArea: Board, var index: Int, private var lastDirection: String = "") {
 
   var tail: ArrayBuffer[Int] = ArrayBuffer(index)
-  private var isAlive = true
 
   def getName: String = {
     this.name
@@ -26,7 +23,12 @@ class Snake(name: String, colour: String = "blue", gameArea: Board, private var 
   }
 
   def isStillAlive: Boolean = {
-    this.isAlive
+//    this.isAlive
+      (lastDirection == "left" && (index - 2) / gameArea.width == index / gameArea.width && index - 2 >= 0) ||
+      (lastDirection == "right" && (index + 2) % gameArea.width != 0) ||
+      (lastDirection == "up" && (index - gameArea.width) >= 0) ||
+      (lastDirection == "down" && (index + gameArea.width) < gameArea.width*gameArea.height) ||
+      this.tail.init.contains(this.getIndex)
   }
 
   def getIndex: Int = {
@@ -34,47 +36,36 @@ class Snake(name: String, colour: String = "blue", gameArea: Board, private var 
   }
 
   def moveLeft = {
-    if ((index - 2) / gameArea.width == index / gameArea.width && index - 2 >= 0) {
+    setLastDirection("left")
+    if (isStillAlive) {
       index = index - 2
       tail = tail :+ index
-      setLastDirection("left")
-    } else {
-      isGameOn = false
-      isAlive = false
     }
   }
 
   def moveRight = {
-    if ((index + 2) % gameArea.width != 0) {
+    setLastDirection("right")
+    if (isStillAlive) {
       index = index + 2
       tail = tail :+ index
-      setLastDirection("right")
-    } else {
-      isGameOn = false
-      isAlive = false
     }
   }
 
   def moveUp = {
-    if ((index - gameArea.width) >= 0) {
+    setLastDirection("up")
+    if (isStillAlive) {
       index = index - gameArea.width
       tail = tail :+ index
-      setLastDirection("up")
-    } else {
-      isGameOn = false
-      isAlive = false
     }
   }
 
   def moveDown = {
-    if ((index + gameArea.width) < gameArea.width*gameArea.height) {
+    setLastDirection("down")
+    if (isStillAlive) {
       index = index + gameArea.width
       tail = tail :+ index
-      setLastDirection("down")
-    } else {
-      isGameOn = false
-      isAlive = false
     }
+
   }
 
   def setLastDirection(direction: String) = {
