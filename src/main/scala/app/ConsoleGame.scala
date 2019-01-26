@@ -20,7 +20,7 @@ object ConsoleGame extends App {
     Thread.sleep(100)
   }
 
-  def clear(): Unit ={
+  def clear(): Unit = {
     print("\033[H\033[2J")
   }
 
